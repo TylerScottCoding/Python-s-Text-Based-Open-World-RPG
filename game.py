@@ -43,7 +43,12 @@ class Player:
         self.player_kills3 = 1
         self.player_kills4 = 1
         self.player_kills5 = 1
-        self.plasyer_kills6 = 1
+        self.player_kills6 = 1
+        self.player_kills7 = 1
+        self.player_kills8 = 1
+        self.player_kills9 = 1
+        self.player_kills10 = 1
+        self.player_kills11 = 1
 myPlayer = Player()
 class Goblins:
     def __init__(self):
@@ -350,7 +355,7 @@ zone_map = {
             },
     'Lake':{
             ZONENAME:"Lake",
-            DESCRIPTION:"You see a small, familiar, yet beautiful lake positioned perfectly in an opening between the trees. \nA river flows into the lake from the south.",
+            DESCRIPTION:"You see a small, familiar, yet beautiful lake positioned perfectly in an opening between the trees. \nA river flows into the lake from the south. \nLegend has it that this lake has no bottom, instead it leads into the darkest area's of earth where unspeakable evil rests.",
             EXAMINATION:"examination",
             SOLVED:False,
             UP:"Town Misc Vendor",
@@ -543,6 +548,16 @@ def level_up():
         myPlayer.player_kills += 1
     if myOgre.hp <= 0:
         myPlayer.player_kills2 += 1
+    if mySpider2.hp <= 0:
+        myPlayer.player_kills3 += 1
+    if mySpider4.hp <= 0:
+        myPlayer.player_kills4 += 1
+    if myImp2.hp <= 0:
+        myPlayer.player_kills5 += 1
+    if myImp4.hp <= 0:
+        myPlayer.player_kills6 += 1
+    if myImp6.hp <= 0:
+        myPlayer.player_kills7 += 1
 def print_stats(action):
     print("Max HP: ")
     print(myPlayer.maxhp)
@@ -577,12 +592,11 @@ def print_location():
     print("\n" + ("#" * (4 + len(myPlayer.location))))
 def prompt():
     if myPlayer.hp > 0:
-        acceptable_actions = ["move", "examine", "quit", "map", "check inventory", "check stats", "help"]
-        if myPlayer.level != 1:
+        acceptable_actions = ["move", "examine", "map", "check inventory", "check stats", "rest", "help", "quit"]
+###### CAVE ENTRANCE EVENTS ######
+        if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
             zone_map['Cave Entrance'][DESCRIPTION] = "The remains of the goblins you defeated earlier seem to have disappeared. \nEverything else remains oddly the same."
-        if myPlayer.level != 2:
-            zone_map['Cave End'][DESCRIPTION] = "The remains of the Ogre seem to have disappeared while the countless humanoid corpses still litter the cave floor."
-        if myPlayer.location == "Cave Entrance":
+        if myPlayer.location == "Cave Entrance" and myGoblin.hp > 0 and myGoblin2.hp > 0 and myGoblin3.hp > 0:
             acceptable_actions.append("attack")
             acceptable_actions.append("special attack")
             if "dmg potion" in myPlayer.player_potions:
@@ -627,41 +641,31 @@ def prompt():
                     acceptable_actions.append("max dmg potion 3")
                 elif myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp > 0:
                     acceptable_actions.append("max dmg potion 3")
-            if "mp potion" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
-                acceptable_actions.append("mp potion")
-            if "mp potion" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
-                acceptable_actions.append("mp potion")
-            if "mp potion" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
-                acceptable_actions.append("mp potion")
-            if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
-                acceptable_actions.append("mp potion 2")
-            if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
-                acceptable_actions.append("mp potion 2")
-            if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
-                acceptable_actions.append("mp potion 2")
-            if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
-                acceptable_actions.append("mp potion 3")
-            if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
-                acceptable_actions.append("mp potion 3")
-            if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
-                acceptable_actions.append("mp potion 3")
             if myGoblin.hp > 0 or myGoblin2.hp > 0 or myGoblin3.hp > 0:
                 acceptable_actions.remove("move")
-            if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0 and myPlayer.player_kills == 1:
-                acceptable_actions.remove("attack")
-                acceptable_actions.remove("special attack")
-                level_up()
-                myPlayer.player_gold += 25
-                if myPlayer.player_wep == "+1 sword":
-                    myPlayer.mana = myPlayer.mana + 2
-                    myPlayer.player_wep = "+3 Sword"
-                    print("You have looted and equipped a +3 sword!")
-                print("You have defeated the group of goblins!")
-                print("Congratulations! Your character has leveled!")
-                print("25 gold has been added to your bag")
+                acceptable_actions.remove("rest")
+        if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0 and myPlayer.player_kills == 1:
+            level_up()
+            myPlayer.player_gold += 25
+            if myPlayer.player_wep == "+1 sword":
+                myPlayer.mana = myPlayer.mana + 2
+                myPlayer.player_wep = "+3 Sword"
+                print("You have looted and equipped a +3 sword!")
+            print("You have defeated the group of goblins!")
+            print("Congratulations! Your character has leveled!")
+            print("25 gold has been added to your bag")
+            print("You feel a gust of freezing wind creeping behind you.")
+##### CAVE END EVENTS #####
+        if myOgre.hp <= 0:
+            zone_map['Cave End'][DESCRIPTION] = "The remains of the Ogre seem to have disappeared while the countless humanoid corpses still litter the cave floor."
+        ogmessage = 0
+        if myOgre.hp <= 0 and myPlayer.location == "Cave End" and ogmessage == 0:
+            print("You hear a faint but overwhelming roar coming from outside of the cave.")
+            ogmessage = 1
         if myPlayer.location == "Cave End":
-            acceptable_actions.append("boss fight")
-            acceptable_actions.append("boss fight special")
+            if myOgre.hp > 0:
+                acceptable_actions.append("boss fight")
+                acceptable_actions.append("boss fight special")
             if "dmg potion" in myPlayer.player_potions and myOgre.hp > 0:
                 acceptable_actions.append("dmg potion")
             if "dmg potion 2" in myPlayer.player_potions and myOgre.hp > 0:
@@ -674,45 +678,274 @@ def prompt():
                 acceptable_actions.append("max dmg potion 2")
             if "max dmg potion 3" in myPlayer.player_potions and myOgre.hp > 0:
                 acceptable_actions.append("max dmg potion 3")
-            if "mp potion" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
-                acceptable_actions.append("mp potion")
-            if "mp potion" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
-                acceptable_actions.append("mp potion")
-            if "mp potion" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
-                acceptable_actions.append("mp potion")
-            if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
-                acceptable_actions.append("mp potion 2")
-            if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
-                acceptable_actions.append("mp potion 2")
-            if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
-                acceptable_actions.append("mp potion 2")
-            if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
-                acceptable_actions.append("mp potion 3")
-            if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
-                acceptable_actions.append("mp potion 3")
-            if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
-                acceptable_actions.append("mp potion 3")
             if myOgre.hp > 0:
                 acceptable_actions.remove("move")
-            if myPlayer.mp <= 25:
+                acceptable_actions.remove("rest")
+            if myPlayer.mp <= 25 and myOgre.hp > 0:
                 acceptable_actions.remove("boss fight special")
-            if myOgre.hp <= 0 and "boss fight special" in acceptable_actions:
-                acceptable_actions.remove("boss fight")
-                acceptable_actions.remove("boss fight special")
-            if myOgre.hp <= 0 and not "boss fight special" in acceptable_actions and "boss fight" in acceptable_actions:
-                acceptable_actions.remove("boss fight")
-            if myOgre.hp <= 0 and myPlayer.player_kills2 == 1:
+        if myOgre.hp <= 0 and myPlayer.player_kills2 == 1:
+            level_up()
+            myPlayer.player_gold += 150
+            print("You have defeated the mighty Ogre!")
+            print("Congratulations! Your character has leveled!")
+            print("150 gold has been added to your bag")
+##### SPIDER EVENTS #####
+        if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
+            zone_map['Deep Forest'][DESCRIPTION] = "This area has changed since your last vist, most of the areas are now covered in giant spider webs and you see two human sized spiders looking for their next victim."
+            zone_map['Deep Forest 2'][DESCRIPTION] = "This area has changed since your last vist, most of the areas are now covered in giant spider webs and you see two human sized spiders looking for their next victim."
+        if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0 and myPlayer.location == "Deep Forest":
+            if mySpider.hp > 0 and mySpider2.hp > 0:
+                acceptable_actions.remove("move")
+                acceptable_actions.remove("rest")
+                acceptable_actions.append("spider fight")
+                acceptable_actions.append("spider fight special")
+            if "dmg potion" in myPlayer.player_potions and mySpider.hp > 0:
+                acceptable_actions.append("dmg potion")
+            elif "dmg potion" in myPlayer.player_potions and mySpider2.hp > 0:
+                acceptable_actions.append("dmg potion")
+            if "dmg potion 2" in myPlayer.player_potions and mySpider.hp > 0:
+                acceptable_actions.append("dmg potion 2")
+            elif "dmg potion 2" in myPlayer.player_potions and mySpider2.hp > 0:
+                acceptable_actions.append("dmg potion 2")
+            if "dmg potion 3" in myPlayer.player_potions and mySpider.hp > 0:
+                acceptable_actions.append("dmg potion 3")
+            elif "dmg potion 3" in myPlayer.player_potions and mySpider2.hp > 0:
+                acceptable_actions.append("dmg potion 3")
+            if "max dmg potion" in myPlayer.player_potions and mySpider.hp > 0:
+                acceptable_actions.append("max dmg potion")
+            elif "max dmg potion" in myPlayer.player_potions and mySpider2.hp > 0:
+                acceptable_actions.append("max dmg potion")
+            if "max dmg potion 2" in myPlayer.player_potions and mySpider.hp > 0:
+                acceptable_actions.append("max dmg potion 2")
+            elif "max dmg potion 2" in myPlayer.player_potions and mySpider2.hp > 0:
+                acceptable_actions.append("max dmg potion 2")
+            if "max dmg potion 3" in myPlayer.player_potions and mySpider.hp > 0:
+                acceptable_actions.append("max dmg potion 3")
+            elif "max dmg potion 3" in myPlayer.player_potions and mySpider2.hp > 0:
+                acceptable_actions.append("max dmg potion 3")
+            if myPlayer.mp < 25 and mySpider.hp > 0 and mySpider2.hp > 0:
+                acceptable_actions.remove("spider fight special")
+            if mySpider.hp <= 0 and mySpider2.hp <= 0:
+                zone_map['Deep Forest'][DESCRIPTION] = "The spider corpses have disappeared just as the other beasts you have slain. Their terrible mess of webs still remains through out the Deep Forest."
+            if mySpider.hp <= 0 and mySpider2.hp <= 0 and myPlayer.player_kills3 == 1:
                 level_up()
-                myPlayer.player_gold += 150
-                print("You have defeated the might Ogre!")
+                myPlayer.player_gold += 50
+                print("You have slaughtered the giant spiders!")
                 print("Congratulations! Your character has leveled!")
-                print("150 gold has been added to your bag")
+                print("50 gold has been added to your bag")
+        if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0 and myPlayer.location == "Deep Forest 2":
+            if mySpider3.hp > 0 and mySpider4.hp > 0:
+                acceptable_actions.remove("move")
+                acceptable_actions.remove("rest")
+                acceptable_actions.append("spider fight")
+                acceptable_actions.append("spider fight special")
+            if "dmg potion" in myPlayer.player_potions and mySpider3.hp > 0:
+                acceptable_actions.append("dmg potion")
+            elif "dmg potion" in myPlayer.player_potions and mySpider4.hp > 0:
+                acceptable_actions.append("dmg potion")
+            if "dmg potion 2" in myPlayer.player_potions and mySpider3.hp > 0:
+                acceptable_actions.append("dmg potion 2")
+            elif "dmg potion 2" in myPlayer.player_potions and mySpider4.hp > 0:
+                acceptable_actions.append("dmg potion 2")
+            if "dmg potion 3" in myPlayer.player_potions and mySpider3.hp > 0:
+                acceptable_actions.append("dmg potion 3")
+            elif "dmg potion 3" in myPlayer.player_potions and mySpider4.hp > 0:
+                acceptable_actions.append("dmg potion 3")
+            if "max dmg potion" in myPlayer.player_potions and mySpider3.hp > 0:
+                acceptable_actions.append("max dmg potion")
+            elif "max dmg potion" in myPlayer.player_potions and mySpider4.hp > 0:
+                acceptable_actions.append("max dmg potion")
+            if "max dmg potion 2" in myPlayer.player_potions and mySpider3.hp > 0:
+                acceptable_actions.append("max dmg potion 2")
+            elif "max dmg potion 2" in myPlayer.player_potions and mySpider4.hp > 0:
+                acceptable_actions.append("max dmg potion 2")
+            if "max dmg potion 3" in myPlayer.player_potions and mySpider3.hp > 0:
+                acceptable_actions.append("max dmg potion 3")
+            elif "max dmg potion 3" in myPlayer.player_potions and mySpider4.hp > 0:
+                acceptable_actions.append("max dmg potion 3")
+            if myPlayer.mp < 25 and mySpider3.hp > 0 and mySpider4.hp > 0:
+                acceptable_actions.remove("spider fight special")
+            if mySpider.hp <= 0 and mySpider2.hp <= 0:
+                zone_map['Deep Forest'][DESCRIPTION] = "The spider corpses have disappeared just as the other beasts you have slain. Their terrible mess of webs still remains through out the Deep Forest."
+            if mySpider3.hp <= 0 and mySpider4.hp <= 0 and myPlayer.player_kills4 == 1:
+                level_up()
+                myPlayer.player_gold += 50
+                print("You have slaughtered the giant spiders!")
+                print("Congratulations! Your character has leveled!")
+                print("50 gold has been added to your bag")
+###### IMP EVENTS #####
+        if myOgre.hp <= 0:
+            zone_map['Forest Edge'][DESCRIPTION] = "Fires begin sprouting from seemingly random places throughout the forest. Well hidden you see 2 demonic imps causing these fires."
+            zone_map['Forest Edge 2'][DESCRIPTION] = "Fires begin sprouting from seemingly random places throughout the forest. Well hidden you see 2 demonic imps causing these fires."
+            zone_map['Home'][DESCRIPTION] = "You see two demonic imps laying waste to all your belongings surrouding your home."
+            if myPlayer.location == "Forest Edge" and myImp.hp > 0 and myImp2.hp > 0:
+                acceptable_actions.append("imp fight")
+                acceptable_actions.append("imp fight special")
+                acceptable_actions.remove("move")
+                acceptable_actions.remove("rest")
+                if "dmg potion" in myPlayer.player_potions and myImp.hp > 0:
+                    acceptable_actions.append("dmg potion")
+                elif "dmg potion" in myPlayer.player_potions and myImp2.hp > 0:
+                    acceptable_actions.append("dmg potion")
+                if "dmg potion 2" in myPlayer.player_potions and myImp.hp > 0:
+                    acceptable_actions.append("dmg potion 2")
+                elif "dmg potion 2" in myPlayer.player_potions and myImp2.hp > 0:
+                    acceptable_actions.append("dmg potion 2")
+                if "dmg potion 3" in myPlayer.player_potions and myImp.hp > 0:
+                    acceptable_actions.append("dmg potion 3")
+                elif "dmg potion 3" in myPlayer.player_potions and myImp2.hp > 0:
+                    acceptable_actions.append("dmg potion 3")
+                if "max dmg potion" in myPlayer.player_potions and myImp.hp > 0:
+                    acceptable_actions.append("max dmg potion")
+                elif "max dmg potion" in myPlayer.player_potions and myImp2.hp > 0:
+                    acceptable_actions.append("max dmg potion")
+                if "max dmg potion 2" in myPlayer.player_potions and myImp.hp > 0:
+                    acceptable_actions.append("max dmg potion 2")
+                elif "max dmg potion 2" in myPlayer.player_potions and myImp2.hp > 0:
+                    acceptable_actions.append("max dmg potion 2")
+                if "max dmg potion 3" in myPlayer.player_potions and myImp.hp > 0:
+                    acceptable_actions.append("max dmg potion 3")
+                elif "max dmg potion 3" in myPlayer.player_potions and myImp2.hp > 0:
+                    acceptable_actions.append("max dmg potion 3")
+                if myPlayer.mp < 25 and myImp.hp > 0 and myImp2.hp > 0:
+                    acceptable_actions.remove("imp fight special")
+            if myImp.hp <= 0 and myImp2.hp <= 0 and myPlayer.player_kills5 == 1:
+                level_up()
+                myPlayer.player_gold += 50
+                print("You have slaughtered demonic imps!")
+                print("Congratulations! Your character has leveled!")
+                print("50 gold has been added to your bag")
+            if myPlayer.location == "Forest Edge 2" and myImp3.hp > 0 and myImp4.hp > 0:
+                acceptable_actions.append("imp fight")
+                acceptable_actions.append("imp fight special")
+                acceptable_actions.remove("move")
+                acceptable_actions.remove("rest")
+                if "dmg potion" in myPlayer.player_potions and myImp3.hp > 0:
+                    acceptable_actions.append("dmg potion")
+                elif "dmg potion" in myPlayer.player_potions and myImp4.hp > 0:
+                    acceptable_actions.append("dmg potion")
+                if "dmg potion 2" in myPlayer.player_potions and myImp3.hp > 0:
+                    acceptable_actions.append("dmg potion 2")
+                elif "dmg potion 2" in myPlayer.player_potions and myImp4.hp > 0:
+                    acceptable_actions.append("dmg potion 2")
+                if "dmg potion 3" in myPlayer.player_potions and myImp3.hp > 0:
+                    acceptable_actions.append("dmg potion 3")
+                elif "dmg potion 3" in myPlayer.player_potions and myImp4.hp > 0:
+                    acceptable_actions.append("dmg potion 3")
+                if "max dmg potion" in myPlayer.player_potions and myImp3.hp > 0:
+                    acceptable_actions.append("max dmg potion")
+                elif "max dmg potion" in myPlayer.player_potions and myImp4.hp > 0:
+                    acceptable_actions.append("max dmg potion")
+                if "max dmg potion 2" in myPlayer.player_potions and myImp3.hp > 0:
+                    acceptable_actions.append("max dmg potion 2")
+                elif "max dmg potion 2" in myPlayer.player_potions and myImp4.hp > 0:
+                    acceptable_actions.append("max dmg potion 2")
+                if "max dmg potion 3" in myPlayer.player_potions and myImp3.hp > 0:
+                    acceptable_actions.append("max dmg potion 3")
+                elif "max dmg potion 3" in myPlayer.player_potions and myImp4.hp > 0:
+                    acceptable_actions.append("max dmg potion 3")
+                if myPlayer.mp < 25 and myImp3.hp > 0 and myImp4.hp > 0:
+                    acceptable_actions.remove("imp fight special")
+            if myImp3.hp <= 0 and myImp4.hp <= 0 and myPlayer.player_kills6 == 1:
+                level_up()
+                myPlayer.player_gold += 50
+                print("You have slaughtered demonic imps!")
+                print("Congratulations! Your character has leveled!")
+                print("50 gold has been added to your bag")
+            if myPlayer.location == "Home" and myImp5.hp > 0 and myImp6.hp > 0:
+                acceptable_actions.append("imp fight")
+                acceptable_actions.append("imp fight special")
+                acceptable_actions.remove("move")
+                acceptable_actions.remove("rest")
+                if "dmg potion" in myPlayer.player_potions and myImp5.hp > 0:
+                    acceptable_actions.append("dmg potion")
+                elif "dmg potion" in myPlayer.player_potions and myImp6.hp > 0:
+                    acceptable_actions.append("dmg potion")
+                if "dmg potion 2" in myPlayer.player_potions and myImp5.hp > 0:
+                    acceptable_actions.append("dmg potion 2")
+                elif "dmg potion 2" in myPlayer.player_potions and myImp6.hp > 0:
+                    acceptable_actions.append("dmg potion 2")
+                if "dmg potion 3" in myPlayer.player_potions and myImp5.hp > 0:
+                    acceptable_actions.append("dmg potion 3")
+                elif "dmg potion 3" in myPlayer.player_potions and myImp6.hp > 0:
+                    acceptable_actions.append("dmg potion 3")
+                if "max dmg potion" in myPlayer.player_potions and myImp5.hp > 0:
+                    acceptable_actions.append("max dmg potion")
+                elif "max dmg potion" in myPlayer.player_potions and myImp6.hp > 0:
+                    acceptable_actions.append("max dmg potion")
+                if "max dmg potion 2" in myPlayer.player_potions and myImp5.hp > 0:
+                    acceptable_actions.append("max dmg potion 2")
+                elif "max dmg potion 2" in myPlayer.player_potions and myImp6.hp > 0:
+                    acceptable_actions.append("max dmg potion 2")
+                if "max dmg potion 3" in myPlayer.player_potions and myImp5.hp > 0:
+                    acceptable_actions.append("max dmg potion 3")
+                elif "max dmg potion 3" in myPlayer.player_potions and myImp6.hp > 0:
+                    acceptable_actions.append("max dmg potion 3")
+                if myPlayer.mp < 25 and myImp5.hp > 0 and myImp6.hp > 0:
+                    acceptable_actions.remove("imp fight special")
+            if myImp5.hp <= 0 and myImp6.hp <= 0 and myPlayer.player_kills7 == 1:
+                level_up()
+                myPlayer.player_gold += 50
+                print("You have slaughtered demonic imps!")
+                print("Congratulations! Your character has leveled!")
+                print("50 gold has been added to your bag")
+###### LAKE MONSTER EVENTS ######
+        if myOgre.hp <= 0:
+            zone_map['Lake'][DESCRIPTION] = "The water of the lake has turned red and you now see that the roar you heard while inside of the cave originated from the monster now lurking around the lake. \nHe look's extremely powerful."
+            if myPlayer.location == "Lake" and myLakeMonster.hp > 0:
+                acceptable_actions.append("monster fight")
+                acceptable_actions.append("monster fight special")
+                if "dmg potion" in myPlayer.player_potions and myLakeMonster.hp > 0:
+                    acceptable_actions.append("dmg potion")
+                if "dmg potion 2" in myPlayer.player_potions and myLakeMonster.hp > 0:
+                    acceptable_actions.append("dmg potion 2")
+                if "dmg potion 3" in myPlayer.player_potions and myLakeMonster.hp > 0:
+                    acceptable_actions.append("dmg potion 3")
+                if "max dmg potion" in myPlayer.player_potions and myLakeMonster.hp > 0:
+                    acceptable_actions.append("max dmg potion")
+                if "max dmg potion 2" in myPlayer.player_potions and myLakeMonster.hp > 0:
+                    acceptable_actions.append("max dmg potion 2")
+                if "max dmg potion 3" in myPlayer.player_potions and myLakeMonster.hp > 0:
+                    acceptable_actions.append("max dmg potion 3")
+                if myPlayer.mp < 25:
+                    acceptable_actions.remove("monster fight special")
+            if myLakeMonster.hp <= 0 and myPlayer.player_kills8 == 1:
+                level_up()
+                myPlayer.player_gold += 250
+                print("You have demolished the powerful Lake Monster!")
+                print("Congratulations! Your character has leveled!")
+                print("250 gold has been added to your bag")
+###### MP POTIONS ######
         if myPlayer.level == 1 and myPlayer.hp <= 50:
             acceptable_actions.append("health potion")
         if myPlayer.level == 2 and myPlayer.hp <= 75:
             acceptable_actions.append("health potion")
         if myPlayer.hp <= 75 and not myPlayer.location == "Cave Entrance" and not myPlayer.location == "Cave End" and myPlayer.hp <= 75:
             acceptable_actions.append("rest")
+        if "mp potion" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
+            acceptable_actions.append("mp potion")
+        if "mp potion" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
+            acceptable_actions.append("mp potion")
+        if "mp potion" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
+            acceptable_actions.append("mp potion")
+        if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
+            acceptable_actions.append("mp potion 2")
+        if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
+            acceptable_actions.append("mp potion 2")
+        if "mp potion 2" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
+            acceptable_actions.append("mp potion 2")
+        if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 1 and myPlayer.mp <= 50:
+            acceptable_actions.append("mp potion 3")
+        if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 2 and myPlayer.mp <= 100:
+            acceptable_actions.append("mp potion 3")
+        if "mp potion 3" in myPlayer.player_potions and myPlayer.level == 3 and myPlayer.mp <= 150:
+            acceptable_actions.append("mp potion 3")
+        if "max mp potion" in myPlayer.player_potions and myPlayer.mp < myPlayer.maxmp:
+            acceptable_actions.append("max mp potion")
+        if "max mp potion 2" in myPlayer.player_potions and myPlayer.mp < myPlayer.maxmp:
+            acceptable_actions.append("max mp potion 2")
+        if "max mp potion 3" in myPlayer.player_potions and myPlayer.mp < myPlayer.maxmp:
+            acceptable_actions.append("max mp potion 3")
 ########### ACTIONS #############
         print("\n" + "==============================")
         print("What would you like to do?\n" + "Choose from the following options: ")
@@ -746,7 +979,32 @@ def prompt():
             print_stats(action.lower())
         elif action.lower() == "help":
             help_menu_started(action.lower())
-        elif action.lower() == "dmg potion":
+        elif action.lower() == "spider fight" and myPlayer.location == "Deep Forest":
+            spider_fight(action.lower())
+        elif action.lower() == "spider fight special" and myPlayer.location == "Deep Forest":
+            spider_special(action.lower())
+        elif action.lower() == "spider fight" and myPlayer.location == "Deep Forest 2":
+            spider_fight_2(action.lower())
+        elif action.lower() == "spider fight special" and myPlayer.location == "Deep Forest 2":
+            spider_special_2(action.lower())
+        elif action.lower() == "imp fight" and myPlayer.location == "Forest Edge":
+            imp_fight(action.lower())
+        elif action.lower() == "imp fight special" and myPlayer.location == "Forest Edge":
+            imp_special(action.lower())
+        elif action.lower() == "imp fight" and myPlayer.location == "Forest Edge 2":
+            imp_fight_2(action.lower())
+        elif action.lower() == "imp fight special" and myPlayer.location == "Forest Edge 2":
+            imp_special_2(action.lower())
+        elif action.lower() == "imp fight" and myPlayer.location == "Home":
+            imp_fight_3(action.lower())
+        elif action.lower() == "imp fight special" and myPlayer.location == "Home":
+            imp_special_3(action.lower())
+        elif action.lower() == "monster fight":
+            monster_fight(action.lower())
+        elif action.lower() == "monster fight special":
+            monster_fight_special(action.lower())
+    ##### POTION ACTIONS #####
+        elif action.lower() == "dmg potion" and myPlayer.location == "Cave Entrance":
             myPlayer.player_potions.remove("dmg potion")
             acceptable_actions.remove("dmg potion")
             print("You deal 50 points of damage to your target!")
@@ -768,11 +1026,15 @@ def prompt():
                 print(myGoblin.hp)
                 print(myGoblin2.hp)
                 print(myGoblin3.hp)
-            elif myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
+        elif action.lower() == "dmg potion" and myPlayer.location == "Cave End":
+            myPlayer.player_potions.remove("dmg potion")
+            acceptable_actions.remove("dmg potion")
+            print("You deal 50 points of damage to your target!")
+            if myOgre.hp > 0:
                 myOgre.hp -= 50
                 print("Ogre's HP: ")
                 print(myOgre.hp)
-        elif action.lower() == "dmg potion 2":
+        elif action.lower() == "dmg potion 2" and myPlayer.location == "Cave Entrance":
             print("You deal 50 points of damage to your target!")
             myPlayer.player_potions.remove("dmg potion 2")
             acceptable_actions.remove("dmg potion 2")
@@ -794,11 +1056,15 @@ def prompt():
                 print(myGoblin.hp)
                 print(myGoblin2.hp)
                 print(myGoblin3.hp)
-            elif myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
+        elif action.lower() == "dmg potion 2" and myPlayer.location == "Cave End":
+            print("You deal 50 points of damage to your target!")
+            myPlayer.player_potions.remove("dmg potion 2")
+            acceptable_actions.remove("dmg potion 2")
+            if myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
                 myOgre.hp -= 50
                 print("Ogre's HP: ")
                 print(myOgre.hp)
-        elif action.lower() == "dmg potion 3":
+        elif action.lower() == "dmg potion 3" and myPlayer.location == "Cave Entrance":
             myPlayer.player_potions.remove("dmg potion 3")
             acceptable_actions.remove("dmg potion 3")
             print("You deal 50 points of damage to your target!")
@@ -820,11 +1086,15 @@ def prompt():
                 print(myGoblin.hp)
                 print(myGoblin2.hp)
                 print(myGoblin3.hp)
-            elif myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
+        elif action.lower() == "dmg potion 3" and myPlayer.location == "Cave End":
+            myPlayer.player_potions.remove("dmg potion 3")
+            acceptable_actions.remove("dmg potion 3")
+            print("You deal 50 points of damage to your target!")
+            if myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
                 myOgre.hp -= 50
                 print("Ogre's HP: ")
                 print(myOgre.hp)
-        elif action.lower() == "max dmg potion":
+        elif action.lower() == "max dmg potion" and myPlayer.location == "Cave Entrance":
             print("You deal 200 points of damage to your target!")
             myPlayer.player_potions.remove("max dmg potion")
             acceptable_actions.remove("max dmg potion")
@@ -846,11 +1116,15 @@ def prompt():
                 print(myGoblin.hp)
                 print(myGoblin2.hp)
                 print(myGoblin3.hp)
-            elif myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
+        elif action.lower() == "max dmg potion" and myPlayer.location == "Cave End":
+            myPlayer.player_potions.remove("dmg potion 3")
+            acceptable_actions.remove("dmg potion 3")
+            print("You deal 50 points of damage to your target!")
+            if myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
                 myOgre.hp -= 200
                 print("Ogre's HP: ")
                 print(myOgre.hp)
-        elif action.lower() == "max dmg potion 2":
+        elif action.lower() == "max dmg potion 2" and myPlayer.location == "Cave Entrance":
             print("You deal 200 points of damage to your target!")
             myPlayer.player_potions.remove("max dmg potion 2")
             acceptable_actions.remove("max dmg potion 2")
@@ -872,11 +1146,15 @@ def prompt():
                 print(myGoblin.hp)
                 print(myGoblin2.hp)
                 print(myGoblin3.hp)
-            elif myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
+        elif action.lower() == "max damage potion 2" and myPlayer.location == "Cave End":
+            print("You deal 200 points of damage to your target!")
+            myPlayer.player_potions.remove("max dmg potion 2")
+            acceptable_actions.remove("max dmg potion 2")
+            if myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
                 myOgre.hp -= 200
                 print("Ogre's HP: ")
                 print(myOgre.hp)
-        elif action.lower == "max dmg potion 3":
+        elif action.lower() == "max dmg potion 3" and myPlayer.location == "Cave Entrance":
             print("You deal 200 points of damage to your target!")
             myPlayer.player_potions.remove("max dmg potion 3")
             acceptable_actions.remove("max dmg potion 3")
@@ -898,7 +1176,11 @@ def prompt():
                 print(myGoblin.hp)
                 print(myGoblin2.hp)
                 print(myGoblin3.hp)
-            elif myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
+        elif action.lower() == "max dmg potion 3" and myPlayer.location == "Cave End":
+            print("You deal 200 points of damage to your target!")
+            myPlayer.player_potions.remove("max dmg potion 3")
+            acceptable_actions.remove("max dmg potion 3")
+            if myOgre.hp > 0 and myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
                 myOgre.hp -= 200
                 print("Ogre's HP: ")
                 print(myOgre.hp)
@@ -989,6 +1271,7 @@ def movement_handler(destination):
     print_location()
 ########## EXAMINE #####################
 def player_examine(action):
+    ###### POTIONS MASTER #########
     if myPlayer.location == "Town Potions Master":
         print("The Town Potions Master offers a variety of potions, for a price. \nWould you like to view his inventory? \nEnter yes or no.")
         tps_action = input("> ")
@@ -1247,6 +1530,7 @@ def player_examine(action):
         while tps_action.lower() != "yes" and tps_action.lower() != "no":
             print("Please enter yes or no!")
             tps_action = input("> ")
+######### BLACKSMITH ##########
     if myPlayer.location == "Town BlackSmith":
         print("The Town BlackSmith offers a variety of weapons and armor, for a price.")
         blacksmith_inventory = ["+5 sword", "+7 sword", "+15 sword", "medium armor", "heavy armor", "exit blacksmith"]
@@ -1259,47 +1543,64 @@ def player_examine(action):
             bs_action = input("> ")
             if bs_action.lower() == '+5 sword':
                 if myPlayer.player_gold >= 150:
-                    print("You have purchased and equipped your new +5 sword!")
-                    myPlayer.player_wep = "+5 sword"
-                    myPlayer.player_gold -= 150
-                    if myPlayer.level == 1:
-                        myPlayer.mana = randint(21,25)
-                    if myPlayer.level == 2:
-                        myPlayer.mana = randint(27,31)
-                    if myPlayer.level == 3:
-                        myPlayer.mana = randint(32,36)
-                    if myPlayer.level == 4:
-                        myPlayer.mana == randint(36,40)
+                    if myPlayer.player_wep == "+1 sword":
+                        myPlayer.player_wep = "+5 sword"
+                        myPlayer.mana += 4
+                        myPlayer.player_gold -= 150
+                        print("You have purchased and equipped your new +5 sword!")
+                    elif myPlayer.player_wep == "+3 sword":
+                        myPlayer.player_wep = "+5 sword"
+                        myPlayer.mana += 2
+                        myPlayer.player_gold -= 150
+                        print("You have purchased and equipped your new +5 sword!")
+                    else:
+                        print("The blacksmith mentions that your current weapon is better than the one you are trying to purchase.")
                 else:
                     print("You don't have enough gold to purchase that item!")
             if bs_action.lower() == "+7 sword":
                 if myPlayer.player_gold >= 250:
-                    print("You have purchased and equipped your new +7 sword!")
-                    myPlayer.player_wep = "+7 sword"
-                    myPlayer.player_gold -= 250
-                    if myPlayer.level == 1:
-                        myPlayer.mana = randint(23,27)
-                    if myPlayer.level == 2:
-                        myPlayer.mana = randint(29,33)
-                    if myPlayer.level == 3:
-                        myPlayer.mana = randint(34,38)
-                    if myPlayer.level == 4:
-                        myPlayer.level = randint(38,42)
+                    if myPlayer.player_wep == "+1 sword":
+                        myPlayer.player_wep = "+7 sword"
+                        myPlayer.mana += 6
+                        myPlayer.player_gold -= 250
+                        print("You have purchased and equipped your new +7 sword!")
+                    elif myPlayer.player_wep == "+3 sword":
+                        myPlayer.player_wep = "+7 sword"
+                        myPlayer.mana += 4
+                        myPlayer.player_gold -= 250
+                        print("You have purchased and equipped your new +7 sword!")
+                    elif myPlayer.player_wep == "+5 sword":
+                        myPlayer.player_wep ="+7 sword"
+                        myPlayer.mana += 2
+                        myPlayer.player_gold -= 250
+                        print("You have purchased and equipped your new +7 sword!")
+                    else:
+                        print("The blacksmith mentions that your current weapon is better than the one you are trying to purchase.")
                 else:
                     print("You don't have enough gold to purchase that item!")
             if bs_action.lower() == "+15 sword":
                 if myPlayer.player_gold >= 500:
-                    print("You have purchased and equipped your new +15 sword!")
-                    myPlayer.player_wep = "+15 sword"
-                    myPlayer.player_gold -= 500
-                    if myPlayer.level == 1:
-                        myPlayer.mana = randint(31,35)
-                    if myPlayer.level == 2:
-                        myPlayer.mana = randint(37,41)
-                    if myPlayer.level == 3:
-                        myPlayer.mana = randint(42,46)
-                    if myPlayer.level == 4:
-                        myPlayer.mana = randint(46,50)
+                    if myPlayer.player_wep == "+1 sword":
+                        myPlayer.player_wep = "+15 sword"
+                        myPlayer.mana += 14
+                        myPlayer.player_gold -= 500
+                        print("You have purchased and equipped your new +15 sword!")
+                    elif myPlayer.player_wep == "+3 sword":
+                        myPlayer.player_wep = "+15 sword"
+                        myPlayer.mana += 12
+                        myPlayer.player_gold -= 500
+                        print("You have purchased and equipped your new +15 sword!")
+                    elif myPlayer.player_wep == "+5 sword":
+                        myPlayer.player_wep ="+15 sword"
+                        myPlayer.mana += 10
+                        myPlayer.player_gold -= 500
+                        print("You have purchased and equipped your new +15 sword!")
+                    elif myPlayer.player_wep == "+7 sword":
+                        myPlayer.player_wep = "+15 sword"
+                        myPlayer.mana += 8
+                        myPlayer.player_gold -= 500
+                    else:
+                        print("The blacksmith mentions that your current weapon is better than the one you are trying to purchase.")
                 else:
                     print("You don't have enough gold to purchase that item!")
             if bs_action.lower() == "medium armor":
@@ -1307,18 +1608,8 @@ def player_examine(action):
                     print("You have purchased and equipped your new mediuma armor!")
                     myPlayer.player_armor = "medium armor"
                     myPlayer.player_gold -= 200
-                    if myPlayer.level == 1:
-                        myPlayer.maxhp = 150
-                        myPlayer.hp = 150
-                    if myPlayer.level == 2:
-                        myPlayer.maxhp = 200
-                        myPlayer.hp = 200
-                    if myPlayer.level == 3:
-                        myPlayer.maxhp = 250
-                        myPlayer.hp = 250
-                    if myPlayer.level == 4:
-                        myPlayer.maxhp = 300
-                        myPlayer.hp = 300
+                    myPlayer.maxhp += 50
+                    myPlayer.maxmp += 25
                 else:
                     print("You don't have enough gold to purchase that item!")
             if bs_action.lower() == "heavy armor":
@@ -1326,18 +1617,8 @@ def player_examine(action):
                     print("You have purchase and equipped your new heavy armor!")
                     myPlayer.player_armor = "heavy armor"
                     myPlayer.player_gold -= 350
-                    if myPlayer.level == 1:
-                        myPlayer.maxhp = 200
-                        myPlayer.hp = 200
-                    if myPlayer.level == 2:
-                        myPlayer.maxhp = 250
-                        myPlayer.hp = 250
-                    if myPlayer.level == 3:
-                        myPlayer.maxhp = 300
-                        myPlayer.hp = 300
-                    if myPlayer.level == 4:
-                        myPlayer.maxhp = 350
-                        myPlayer.hp = 350
+                    myPlayer.maxhp += 100
+                    myPlayer.maxmp += 100
                 else:
                     print("You don't have enough gold to purchase that item!")
             if bs_action.lower() == "exit blacksmith":
@@ -1387,9 +1668,249 @@ def player_examine(action):
         print("You cannot go south from here. This is a mystical wall.")
         
 ######### FIGHTING ##################
+def monster_fight(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myLakeMonster.hp > 0:
+        myLakeMonster.hp -= myPlayer.mana
+        myPlayer.hp -= myLakeMonster.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Lake Monster's HP is:")
+        print(myLakeMonster.hp)
+def monster_fight_special(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myLakeMonster.hp > 0:
+        myLakeMonster.hp -= myPlayer.special
+        myPlayer.hp -= myLakeMonster.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Lake Monster's HP is:")
+        print(myLakeMonster.hp)
+def imp_fight(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myImp.hp > 0 and myImp2.hp > 0:
+        myImp.hp -= myPlayer.mana
+        myImp2.hp -= myPlayer.mana
+        myPlayer.hp -= myImp.dmg
+        myPlayer.hp -= myImp2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp.hp)
+        print(myImp2.hp)
+    if myImp.hp <= 0 and myImp2.hp > 0:
+        myImp2.hp -= myPlayer.mana
+        myPlayer.hp -= myImp2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp.hp)
+        print(myImp2.hp)
+def imp_special(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myImp.hp > 0 and myImp2.hp > 0:
+        myImp.hp -= myPlayer.special
+        myImp2.hp -= myPlayer.special
+        myPlayer.hp -= myImp.dmg
+        myPlayer.hp -= myImp2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp.hp)
+        print(myImp2.hp)
+    if myImp.hp <= 0 and myImp2.hp > 0:
+        myImp2.hp -= myPlayer.special
+        myPlayer.hp -= myImp2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp.hp)
+        print(myImp2.hp)
+def imp_fight_2(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myImp3.hp > 0 and myImp4.hp > 0:
+        myImp3.hp -= myPlayer.mana
+        myImp4.hp -= myPlayer.mana
+        myPlayer.hp -= myImp3.dmg
+        myPlayer.hp -= myImp4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp3.hp)
+        print(myImp4.hp)
+    if myImp3.hp <= 0 and myImp4.hp > 0:
+        myImp4.hp -= myPlayer.mana
+        myPlayer.hp -= myImp4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp3.hp)
+        print(myImp4.hp)
+def imp_special_2(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myImp3.hp > 0 and myImp4.hp > 0:
+        myImp3.hp -= myPlayer.special
+        myImp4.hp -= myPlayer.special
+        myPlayer.hp -= myImp3.dmg
+        myPlayer.hp -= myImp4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp3.hp)
+        print(myImp4.hp)
+    if myImp3.hp <= 0 and myImp4.hp > 0:
+        myImp4.hp -= myPlayer.special
+        myPlayer.hp -= myImp4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp3.hp)
+        print(myImp4.hp)
+def imp_fight_3(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myImp5.hp > 0 and myImp6.hp > 0:
+        myImp5.hp -= myPlayer.mana
+        myImp6.hp -= myPlayer.mana
+        myPlayer.hp -= myImp5.dmg
+        myPlayer.hp -= myImp6.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp5.hp)
+        print(myImp6.hp)
+    if myImp5.hp <= 0 and myImp6.hp > 0:
+        myImp5.hp -= myPlayer.mana
+        myPlayer.hp -= myImp5.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp5.hp)
+        print(myImp6.hp)
+def imp_special_3(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if myImp5.hp > 0 and myImp6.hp > 0:
+        myImp5.hp -= myPlayer.special
+        myImp6.hp -= myPlayer.special
+        myPlayer.hp -= myImp5.dmg
+        myPlayer.hp -= myImp6.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp5.hp)
+        print(myImp6.hp)
+    if myImp5.hp <= 0 and myImp6.hp > 0:
+        myImp5.hp -= myPlayer.special
+        myPlayer.hp -= myImp5.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Imp's HP is: ")
+        print(myImp5.hp)
+        print(myImp6.hp)
+def spider_fight(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if mySpider.hp > 0 and mySpider2.hp > 0:
+        mySpider.hp -= myPlayer.mana
+        mySpider2.hp -= myPlayer.mana
+        myPlayer.hp -= mySpider.dmg
+        myPlayer.hp -= mySpider2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider.hp)
+        print(mySpider2.hp)
+    if mySpider.hp <= 0 and mySpider2.hp > 0:
+        mySpider2.hp -= myPlayer.mana
+        myPlayer.hp -= mySpider2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider.hp)
+        print(mySpider2.hp)
+def spider_special(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if mySpider.hp > 0 and mySpider2.hp > 0:
+        mySpider.hp -= myPlayer.special
+        mySpider2.hp -= myPlayer.special
+        myPlayer.hp -= mySpider.dmg
+        myPlayer.hp -= mySpider2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider.hp)
+        print(mySpider2.hp)
+    if mySpider.hp <= 0 and mySpider2.hp > 0:
+        mySpider2.hp -= myPlayer.special
+        myPlayer.hp -= mySpider2.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider.hp)
+        print(mySpider2.hp)
+def spider_fight_2(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if mySpider3.hp > 0 and mySpider4.hp > 0:
+        mySpider3.hp -= myPlayer.mana
+        mySpider4.hp -= myPlayer.mana
+        myPlayer.hp -= mySpider3.dmg
+        myPlayer.hp -= mySpider4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider3.hp)
+        print(mySpider4.hp)
+    if mySpider3.hp <= 0 and mySpider4.hp > 0:
+        mySpider4.hp -= myPlayer.mana
+        myPlayer.hp -= mySpider4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider3.hp)
+        print(mySpider4.hp)
+def spider_special_2(action):
+    if myPlayer.hp <= 0:
+        print("You have died!")
+        myPlayer.gameover = True
+    if mySpider3.hp > 0 and mySpider4.hp > 0:
+        mySpider3.hp -= myPlayer.special
+        mySpider4.hp -= myPlayer.special
+        myPlayer.hp -= mySpider3.dmg
+        myPlayer.hp -= mySpider4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider3.hp)
+        print(mySpider4.hp)
+    if mySpider3.hp <= 0 and mySpider4.hp > 0:
+        mySpider4.hp -= myPlayer.special
+        myPlayer.hp -= mySpider4.dmg
+        print("Your HP is: ")
+        print(myPlayer.hp)
+        print("The Spider's HP is: ")
+        print(mySpider3.hp)
+        print(mySpider4.hp)
 def player_fight(action):
-    if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
-        print("The Goblins have been defeated!")
     if myPlayer.hp <= 0:
         print("You have died!")
         myPlayer.gameover = True
@@ -1426,10 +1947,7 @@ def player_fight(action):
         print(myGoblin.hp)
         print(myGoblin2.hp)
         print(myGoblin3.hp)
-
 def player_special(action):
-    if myGoblin.hp <= 0 and myGoblin2.hp <= 0 and myGoblin3.hp <= 0:
-        print("The Goblins have been slaughtered!")
     if myPlayer.hp <= 0:
         print("You have died!")
         myPlayer.gameover = True
@@ -1470,8 +1988,6 @@ def player_special(action):
         print("Your MP:")
         print(myPlayer.mp)
 def boss_fight(action):
-    if myOgre.hp <=0:
-        print("The Ogre has been defeated!")
     if myPlayer.hp <= 0:
         print("You have died!")
         myPlayer.gameover = True
@@ -1484,8 +2000,6 @@ def boss_fight(action):
         print("Your HP:")
         print(myPlayer.hp)
 def boss_fight_special(action):
-    if myOgre.hp <=0:
-        print("The Ogre has been defeated!")
     if myPlayer.hp <= 0:
         print("You have died!")
         myPlayer.gameover = True
@@ -1506,53 +2020,16 @@ def boss_fight_special(action):
 def main_game_loop():
     while myPlayer.gameover == False:
         prompt()
-    #here handle if puzzles solved, boss defeated, etc
 
 def setup_game():
     os.system('clear')
-    ## NAME COLLECTING
     question1 = "Hello!, What's your name?\n"
-    # These for loops print each character with a delay to make it look more realistic. It could've just been a print statement
     for character in question1:
         sys.stdout.write(character)
         sys.stdout.flush()
         time.sleep(0.05)
     player_name = input("> ")
     myPlayer.name = player_name
-    '''
-    question2 = "What role would you like to play?\n"
-    question2added = "(You can play as a Warrior, Mage, or Priest)\n"
-    for character in question2:
-        sys.stdout.write(character)
-        sys.stdout.flush()
-        time.sleep(0.05)
-    for character in question2added:
-        sys.stdout.write(character)
-        sys.stdout.flush()
-        time.sleep(0.01)
-    player_job = input("> ")
-    valid_job = ["warrior", "mage", "priest"]
-    if player_job.lower() in valid_job:
-        myPlayer.job = player_job
-        print("You are now a " + player_job + ".\n")
-    while player_job.lower() not in valid_job:
-        print("Please enter the name of the role in which you'd like to play")
-        player_job = input("> ")
-        if player_job.lower() in valid_job:
-            myPlayer.job = player_job
-            print("You are now a " + player_job + ".\n")
-    '''
-    '''
-    if myPlayer.job == "warrior":
-        hp = 250
-        mana = 10
-    elif myPlayer.job == "mage":
-        hp = 150
-        mana = 20
-    elif myPlayer.job == "priest":
-        hp = 200
-        mana = 20
-    '''
     question3 = "Welcome, " + player_name + " to this fantasy world!\n"
     for character in question3:
         sys.stdout.write(character)
